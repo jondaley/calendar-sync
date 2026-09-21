@@ -527,9 +527,15 @@ struct CalendarSync {
         func updateGoogleCalendarEvent(eventID: String, event: EKEvent, accessToken: String, calendarID: String, marker: String) throws {
             let rfc3339DateFormatter = ISO8601DateFormatter()
 
+            var description = ""
+            if let notes = event.notes, !notes.isEmpty {
+                description = notes + "\n\n"
+            }
+            description += marker
+
             var eventBody: [String: Any] = [
                 "summary": event.title ?? "No Title",
-                "description": marker
+                "description": description
             ]
 
             if event.isAllDay {
@@ -613,10 +619,11 @@ struct CalendarSync {
             let rfc3339DateFormatter = ISO8601DateFormatter()
             let marker = getSyncMarker(event: event)
 
-            var description = marker
+            var description = ""
             if let notes = event.notes, !notes.isEmpty {
-                description += "\n\n" + notes
+                description = notes + "\n\n"
             }
+            description += marker
 
             var eventBody: [String: Any] = [
                 "summary": event.title ?? "No Title",

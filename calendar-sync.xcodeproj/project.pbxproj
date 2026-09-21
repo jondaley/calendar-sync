@@ -88,11 +88,11 @@
 			buildRules = (
 			);
 			fileSystemSynchronizedGroups = (
-				9C40FF3B3061A396005E020F /* Calendar Sync */,
+				9C40FF3B3061A396005E020F /* calendar-sync */,
 			);
-			name = "Calendar Sync";
-			productName = "Calendar Sync";
-			productReference = 9C40FF393061A396005E020F /* Calendar Sync.app */;
+			name = "calendar-sync";
+			productName = "calendar-sync";
+			productReference = 9C40FF393061A396005E020F /* calendar-sync.app */;
 			productType = "com.apple.product-type.application";
 		};
 		9C40FF453061A398005E020F /* Calendar SyncTests */ = {
