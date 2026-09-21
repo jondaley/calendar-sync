@@ -13,7 +13,6 @@ A macOS command-line tool that syncs events from your local Calendar app to Goog
 
 **2. Build & run** (see [BUILD.md](BUILD.md)):
 ```bash
-./build.sh
 ./bin/calendar-sync
 ```
 

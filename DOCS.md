@@ -76,7 +76,7 @@ If you want to sync to an existing calendar:
 2. Find your calendar in the left sidebar
 3. Click the three dots menu next to it
 4. Select "Settings"
-5. Look for "Calendar ID" (usually an email-like format: `your.email@gmail.com`)
+5. Look for "Calendar ID" under Integrete Calendar (usually an email-like format: `your.email@gmail.com`)
 
 ## Troubleshooting
 
@@ -93,10 +93,6 @@ Then run the app again for first-time setup.
 ### "Sync error: noData"
 
 Same issue as above - run the reset commands above.
-
-### Keychain keeps asking for password
-
-If the system Keychain prompts for your password, click "Always Allow" to prevent repeated prompts.
 
 ### Calendar wasn't created / synced
 
