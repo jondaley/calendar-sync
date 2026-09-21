@@ -9,7 +9,6 @@ A macOS command-line tool that syncs events from your local Calendar app to Goog
 - **Handles updates and deletions** - changes on the local calendar are reflected on Google
 - **Periodic syncing** - runs every 5 minutes by default
 - **Secure token storage** - refresh tokens stored in macOS Keychain
-- **Token caching** - reduces keychain prompts to once per hour
 
 ## Prerequisites
 
@@ -164,7 +163,7 @@ Events you create directly in Google Calendar are **never touched** by this app:
 
 - First run: Opens your browser for Google OAuth login
 - Refresh token: Stored securely in macOS Keychain
-- Access token: Cached in memory for 55 minutes (reduces keychain prompts)
+- Subsequent runs: Uses the stored refresh token to obtain new access tokens
 
 ## Troubleshooting
 
@@ -184,7 +183,7 @@ Same issue as above - run the reset commands above.
 
 ### Keychain keeps asking for password
 
-This is normal on first run. Click "Always Allow" and it should only ask once per hour after that.
+If the system Keychain prompts for your password, click "Always Allow" to prevent repeated prompts.
 
 ### Calendar wasn't created / synced
 
