@@ -14,8 +14,22 @@ A macOS command-line tool that syncs events from your local Calendar app to Goog
 ## Prerequisites
 
 - macOS (10.15+)
-- Local events in macOS Calendar app
+- Corporate calendar in macOS Calendar app
 - Google account for destination calendar
+
+## Getting Your Corporate Calendar into macOS Calendar
+
+Before syncing, you need to add your corporate calendar to macOS Calendar:
+
+1. Open **Calendar** app on your Mac
+2. Go to **Calendar** > **Preferences** > **Accounts**
+3. Click the **+** button to add an account
+4. Select **Google**
+5. Sign in with your corporate Gmail account
+6. Check the box next to your corporate calendar to sync it
+7. Click **Done**
+
+Your corporate calendar events should now appear in macOS Calendar.
 
 ## Setup
 
