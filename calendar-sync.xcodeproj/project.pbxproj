@@ -24,25 +24,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		9C40FF393061A396005E020F /* Calendar Sync.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Calendar Sync.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		9C40FF393061A396005E020F /* calendar-sync.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "calendar-sync.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9C40FF463061A398005E020F /* Calendar SyncTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Calendar SyncTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9C40FF503061A398005E020F /* Calendar SyncUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Calendar SyncUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		9C40FF3B3061A396005E020F /* Calendar Sync */ = {
+		9C40FF3B3061A396005E020F /* calendar-sync */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Calendar Sync";
-			sourceTree = "<group>";
-		};
-		9C40FF493061A398005E020F /* Calendar SyncTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Calendar SyncTests";
-			sourceTree = "<group>";
-		};
-		9C40FF533061A398005E020F /* Calendar SyncUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Calendar SyncUITests";
+			path = "calendar-sync";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -70,8 +60,6 @@
 			isa = PBXGroup;
 			children = (
 				9C40FF3B3061A396005E020F /* Calendar Sync */,
-				9C40FF493061A398005E020F /* Calendar SyncTests */,
-				9C40FF533061A398005E020F /* Calendar SyncUITests */,
 				9C40FF3A3061A396005E020F /* Products */,
 			);
 			sourceTree = "<group>";
@@ -120,9 +108,6 @@
 			dependencies = (
 				9C40FF483061A398005E020F /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				9C40FF493061A398005E020F /* Calendar SyncTests */,
-			);
 			name = "Calendar SyncTests";
 			productName = "Calendar SyncTests";
 			productReference = 9C40FF463061A398005E020F /* Calendar SyncTests.xctest */;
@@ -140,9 +125,6 @@
 			);
 			dependencies = (
 				9C40FF523061A398005E020F /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				9C40FF533061A398005E020F /* Calendar SyncUITests */,
 			);
 			name = "Calendar SyncUITests";
 			productName = "Calendar SyncUITests";
@@ -369,7 +351,8 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				ENABLE_APP_SANDBOX = YES;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_CODE_COVERAGE = NO;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -399,7 +382,8 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				ENABLE_APP_SANDBOX = YES;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_CODE_COVERAGE = NO;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;

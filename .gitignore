@@ -1,0 +1,30 @@
+# Credentials and secrets
+.env
+.env.local
+*.pem
+*.key
+credentials.json
+
+# Xcode
+build/
+.xcarchive/
+DerivedData/
+*.xcworkspace
+xcuserdata/
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.profraw
+*.profdata
+
+# OS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
