@@ -51,6 +51,7 @@ Events you create directly in Google Calendar are **never touched** by this app:
 
 - First run: Opens your browser for Google OAuth login
 - Refresh token: Stored securely in macOS Keychain, gated by Touch ID (falls back to your device password if Touch ID fails or isn't available)
+- Touch ID prompts once per app launch, not on every sync — the unlocked refresh token is held in memory for that process's lifetime, so it only needs to be re-confirmed after a restart or reboot, not every hour
 - Subsequent runs: Uses the stored refresh token to obtain new access tokens
 - Must be run as `./bin/calendar-sync.app/Contents/MacOS/calendar-sync` (inside its `.app` bundle) — a bare copied binary breaks Keychain access
 

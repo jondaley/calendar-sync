@@ -25,4 +25,14 @@ mkdir -p ./bin
 rm -rf ./bin/calendar-sync.app
 cp -R "$APP_BUNDLE" ./bin/calendar-sync.app
 
+# Guard against a regression back to a flattened/broken bundle: a bare copied
+# executable reports "Info.plist=not bound" / "Sealed Resources=none" here
+# instead of a real entry count, even though its code hash is unchanged.
+SIGNATURE_INFO=$(codesign -dv --verbose=4 ./bin/calendar-sync.app 2>&1)
+if echo "$SIGNATURE_INFO" | grep -q "Info.plist=not bound"; then
+    echo "Error: ./bin/calendar-sync.app lost its Info.plist binding during copy."
+    echo "$SIGNATURE_INFO"
+    exit 1
+fi
+
 echo "✓ Build complete - run with: ./bin/calendar-sync.app/Contents/MacOS/calendar-sync"

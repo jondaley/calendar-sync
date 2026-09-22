@@ -364,9 +364,7 @@ struct CalendarSync {
             return eventStore.events(matching: predicate)
         }
 
-        func getAccessToken(clientID: String, clientSecret: String) throws -> String {
-            let refreshToken = try Keychain.load()
-
+        func getAccessToken(clientID: String, clientSecret: String, refreshToken: String) throws -> String {
             var request = URLRequest(
                 url: URL(string: "https://oauth2.googleapis.com/token")!
             )
@@ -814,7 +812,8 @@ struct CalendarSync {
             print("")
 
             do {
-                let accessToken = try getAccessToken(clientID: clientID, clientSecret: clientSecret)
+                let refreshToken = try Keychain.load()
+                let accessToken = try getAccessToken(clientID: clientID, clientSecret: clientSecret, refreshToken: refreshToken)
                 let googleCalendarJSON = try listGoogleCalendarEvents(accessToken: accessToken, calendarID: destID)
                 let googleEvents = (googleCalendarJSON["items"] as? [[String: Any]]) ?? []
 
@@ -850,9 +849,11 @@ struct CalendarSync {
             print("Destination calendar: \(destCalendarID ?? "unknown")")
             print("")
 
-            // Verify refresh token exists in keychain
+            // Load the refresh token once (the only Touch ID prompt for this process's lifetime)
+            // and hold it in memory rather than re-reading Keychain on every access-token renewal.
+            let refreshToken: String
             do {
-                _ = try Keychain.load()
+                refreshToken = try Keychain.load()
             } catch {
                 print("ERROR: Refresh token not found in keychain.")
                 print("")
@@ -894,7 +895,7 @@ struct CalendarSync {
                     if let cached = cachedAccessToken, let expiry = tokenExpiryTime, Date() < expiry {
                         accessToken = cached
                     } else {
-                        accessToken = try getAccessToken(clientID: clientID, clientSecret: clientSecret)
+                        accessToken = try getAccessToken(clientID: clientID, clientSecret: clientSecret, refreshToken: refreshToken)
                         cachedAccessToken = accessToken
                         tokenExpiryTime = Date(timeIntervalSinceNow: 55 * 60)
                     }
