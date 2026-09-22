@@ -22,12 +22,19 @@ Your corporate calendar events should now appear in macOS Calendar.
    - Click "APIs & Services" > "Library"
    - Search for "Google Calendar API"
    - Click "Enable"
-4. Create OAuth 2.0 credentials:
+4. Add the required scopes to the OAuth consent screen (a separate step from enabling the API above):
+   - Click "APIs & Services" > "OAuth consent screen" > "Data Access"
+   - Click "Add or Remove Scopes"
+   - Add both of these (manually paste the scope if it's not in the filtered list):
+     - `https://www.googleapis.com/auth/calendar.calendarlist.readonly` — lets the app list your calendars during setup
+     - `https://www.googleapis.com/auth/calendar.app.created` — lets the app create its own destination calendar and manage events on it (it can't touch any calendar it didn't create itself)
+   - Save
+5. Create OAuth 2.0 credentials:
    - Click "APIs & Services" > "Credentials"
    - Click "Create Credentials" > "OAuth 2.0 Client ID"
    - Choose "Desktop application"
    - Click "Create"
-5. Copy your Client ID and Client Secret
+6. Copy your Client ID and Client Secret
 
 ## How It Works
 

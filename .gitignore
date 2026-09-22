@@ -6,6 +6,7 @@
 credentials.json
 
 bin
+dist
 
 # Xcode
 build/
