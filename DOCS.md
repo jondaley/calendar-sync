@@ -50,8 +50,9 @@ Events you create directly in Google Calendar are **never touched** by this app:
 ### Authentication
 
 - First run: Opens your browser for Google OAuth login
-- Refresh token: Stored securely in macOS Keychain
+- Refresh token: Stored securely in macOS Keychain, gated by Touch ID (falls back to your device password if Touch ID fails or isn't available)
 - Subsequent runs: Uses the stored refresh token to obtain new access tokens
+- Must be run as `./bin/calendar-sync.app/Contents/MacOS/calendar-sync` (inside its `.app` bundle) — a bare copied binary breaks Keychain access
 
 ## Customization
 
@@ -68,15 +69,9 @@ to desired interval in seconds (e.g., `60 * 60` for 1 hour).
 
 When prompted to create a new calendar, you can manually enter a different name instead of "Corporate Calendar".
 
-## Finding Your Google Calendar ID
+## Choosing a Destination Calendar
 
-If you want to sync to an existing calendar:
-
-1. Go to [Google Calendar](https://calendar.google.com)
-2. Find your calendar in the left sidebar
-3. Click the three dots menu next to it
-4. Select "Settings"
-5. Look for "Calendar ID" under Integrete Calendar (usually an email-like format: `your.email@gmail.com`)
+During setup, the app only lets you pick a calendar it created itself (it lists these by probing which of your calendars it can actually read/write events on), or create a new one. You can't point it at a pre-existing calendar with personal events — the app's OAuth scope (`calendar.app.created`) is intentionally restricted to calendars the app created, so it can't read or write events anywhere else in your account.
 
 ## Troubleshooting
 
@@ -85,7 +80,7 @@ If you want to sync to an existing calendar:
 The settings exist but the refresh token wasn't saved. Reset and re-authenticate:
 ```bash
 defaults delete com.jondaley.calendar-sync
-security delete-generic-password -s com.jondaley.calendar-sync -a google-refresh-token 2>/dev/null
+security delete-generic-password -s com.jondaley.calendar-sync -a google-refresh-token 
 ```
 
 Then run the app again for first-time setup.
@@ -93,6 +88,10 @@ Then run the app again for first-time setup.
 ### "Sync error: noData"
 
 Same issue as above - run the reset commands above.
+
+### Destination calendar was deleted on Google
+
+If the Google Calendar you were syncing to gets deleted (e.g. cleaning up test calendars), the app detects this automatically at the start of each sync pass, walks you through picking or creating a new destination calendar, and updates its saved settings — no manual reset needed.
 
 ### Calendar wasn't created / synced
 

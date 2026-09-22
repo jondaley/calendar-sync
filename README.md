@@ -13,7 +13,7 @@ A macOS command-line tool that syncs events from your local Calendar app to Goog
 
 **2. Build & run** (see [BUILD.md](BUILD.md)):
 ```bash
-./bin/calendar-sync
+./bin/calendar-sync.app/Contents/MacOS/calendar-sync
 ```
 
 On first run, the app will ask you to select a local calendar and authenticate with Google.
@@ -21,9 +21,9 @@ On first run, the app will ask you to select a local calendar and authenticate w
 ## Usage
 
 ```bash
-./bin/calendar-sync              # Start syncing (every 5 minutes)
-./bin/calendar-sync --clear-all  # Delete synced events from Google Calendar
-./bin/calendar-sync --help       # Show help
+./bin/calendar-sync.app/Contents/MacOS/calendar-sync              # Start syncing (every 5 minutes)
+./bin/calendar-sync.app/Contents/MacOS/calendar-sync --clear-all  # Delete synced events from Google Calendar
+./bin/calendar-sync.app/Contents/MacOS/calendar-sync --help       # Show help
 ```
 
 ## Features
@@ -32,7 +32,7 @@ On first run, the app will ask you to select a local calendar and authenticate w
 - Smart deduplication (no duplicates on re-runs)
 - Updates and deletes reflected on Google
 - Personal Google Calendar events are never touched
-- Secure token storage in macOS Keychain
+- Secure token storage in macOS Keychain, gated by Touch ID
 
 ## More Info
 

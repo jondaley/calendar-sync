@@ -7,26 +7,10 @@
 	objects = {
 
 /* Begin PBXContainerItemProxy section */
-		9C40FF473061A398005E020F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9C40FF313061A396005E020F /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 9C40FF383061A396005E020F;
-			remoteInfo = "Calendar Sync";
-		};
-		9C40FF513061A398005E020F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9C40FF313061A396005E020F /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 9C40FF383061A396005E020F;
-			remoteInfo = "Calendar Sync";
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		9C40FF393061A396005E020F /* calendar-sync.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "calendar-sync.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		9C40FF463061A398005E020F /* Calendar SyncTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Calendar SyncTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		9C40FF503061A398005E020F /* Calendar SyncUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Calendar SyncUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -39,16 +23,6 @@
 
 /* Begin PBXFrameworksBuildPhase section */
 		9C40FF363061A396005E020F /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			files = (
-			);
-		};
-		9C40FF433061A398005E020F /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			files = (
-			);
-		};
-		9C40FF4D3061A398005E020F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
 			);
@@ -68,8 +42,6 @@
 			isa = PBXGroup;
 			children = (
 				9C40FF393061A396005E020F /* Calendar Sync.app */,
-				9C40FF463061A398005E020F /* Calendar SyncTests.xctest */,
-				9C40FF503061A398005E020F /* Calendar SyncUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -95,42 +67,6 @@
 			productReference = 9C40FF393061A396005E020F /* calendar-sync.app */;
 			productType = "com.apple.product-type.application";
 		};
-		9C40FF453061A398005E020F /* Calendar SyncTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 9C40FF5B3061A398005E020F /* Build configuration list for PBXNativeTarget "Calendar SyncTests" */;
-			buildPhases = (
-				9C40FF423061A398005E020F /* Sources */,
-				9C40FF433061A398005E020F /* Frameworks */,
-				9C40FF443061A398005E020F /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				9C40FF483061A398005E020F /* PBXTargetDependency */,
-			);
-			name = "Calendar SyncTests";
-			productName = "Calendar SyncTests";
-			productReference = 9C40FF463061A398005E020F /* Calendar SyncTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		9C40FF4F3061A398005E020F /* Calendar SyncUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 9C40FF5E3061A398005E020F /* Build configuration list for PBXNativeTarget "Calendar SyncUITests" */;
-			buildPhases = (
-				9C40FF4C3061A398005E020F /* Sources */,
-				9C40FF4D3061A398005E020F /* Frameworks */,
-				9C40FF4E3061A398005E020F /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				9C40FF523061A398005E020F /* PBXTargetDependency */,
-			);
-			name = "Calendar SyncUITests";
-			productName = "Calendar SyncUITests";
-			productReference = 9C40FF503061A398005E020F /* Calendar SyncUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -143,14 +79,6 @@
 				TargetAttributes = {
 					9C40FF383061A396005E020F = {
 						CreatedOnToolsVersion = 27.0;
-					};
-					9C40FF453061A398005E020F = {
-						CreatedOnToolsVersion = 27.0;
-						TestTargetID = 9C40FF383061A396005E020F;
-					};
-					9C40FF4F3061A398005E020F = {
-						CreatedOnToolsVersion = 27.0;
-						TestTargetID = 9C40FF383061A396005E020F;
 					};
 				};
 			};
@@ -169,24 +97,12 @@
 			projectRoot = "";
 			targets = (
 				9C40FF383061A396005E020F /* Calendar Sync */,
-				9C40FF453061A398005E020F /* Calendar SyncTests */,
-				9C40FF4F3061A398005E020F /* Calendar SyncUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		9C40FF373061A396005E020F /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			files = (
-			);
-		};
-		9C40FF443061A398005E020F /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			files = (
-			);
-		};
-		9C40FF4E3061A398005E020F /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
 			);
@@ -199,29 +115,9 @@
 			files = (
 			);
 		};
-		9C40FF423061A398005E020F /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			files = (
-			);
-		};
-		9C40FF4C3061A398005E020F /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			files = (
-			);
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		9C40FF483061A398005E020F /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 9C40FF383061A396005E020F /* Calendar Sync */;
-			targetProxy = 9C40FF473061A398005E020F /* PBXContainerItemProxy */;
-		};
-		9C40FF523061A398005E020F /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 9C40FF383061A396005E020F /* Calendar Sync */;
-			targetProxy = 9C40FF513061A398005E020F /* PBXContainerItemProxy */;
-		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -362,7 +258,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.jondaley.Calendar-Sync";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jondaley.calendar-sync";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -393,7 +289,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.jondaley.Calendar-Sync";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jondaley.calendar-sync";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -402,82 +298,6 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-			};
-			name = Release;
-		};
-		9C40FF5C3061A398005E020F /* Debug configuration for PBXNativeTarget "Calendar SyncTests" */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 26.6;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.jondaley.Calendar-SyncTests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Calendar Sync.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Calendar Sync";
-			};
-			name = Debug;
-		};
-		9C40FF5D3061A398005E020F /* Release configuration for PBXNativeTarget "Calendar SyncTests" */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 26.6;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.jondaley.Calendar-SyncTests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Calendar Sync.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Calendar Sync";
-			};
-			name = Release;
-		};
-		9C40FF5F3061A398005E020F /* Debug configuration for PBXNativeTarget "Calendar SyncUITests" */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.jondaley.Calendar-SyncUITests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = "Calendar Sync";
-			};
-			name = Debug;
-		};
-		9C40FF603061A398005E020F /* Release configuration for PBXNativeTarget "Calendar SyncUITests" */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.jondaley.Calendar-SyncUITests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = "Calendar Sync";
 			};
 			name = Release;
 		};
@@ -497,22 +317,6 @@
 			buildConfigurations = (
 				9C40FF593061A398005E020F /* Debug configuration for PBXNativeTarget "Calendar Sync" */,
 				9C40FF5A3061A398005E020F /* Release configuration for PBXNativeTarget "Calendar Sync" */,
-			);
-			defaultConfigurationName = Release;
-		};
-		9C40FF5B3061A398005E020F /* Build configuration list for PBXNativeTarget "Calendar SyncTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				9C40FF5C3061A398005E020F /* Debug configuration for PBXNativeTarget "Calendar SyncTests" */,
-				9C40FF5D3061A398005E020F /* Release configuration for PBXNativeTarget "Calendar SyncTests" */,
-			);
-			defaultConfigurationName = Release;
-		};
-		9C40FF5E3061A398005E020F /* Build configuration list for PBXNativeTarget "Calendar SyncUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				9C40FF5F3061A398005E020F /* Debug configuration for PBXNativeTarget "Calendar SyncUITests" */,
-				9C40FF603061A398005E020F /* Release configuration for PBXNativeTarget "Calendar SyncUITests" */,
 			);
 			defaultConfigurationName = Release;
 		};

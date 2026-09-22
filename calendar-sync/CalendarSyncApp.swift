@@ -20,6 +20,46 @@ struct CalendarSync {
     }
 
     func run(clearAll: Bool = false, showHelp: Bool = false) throws {
+        // Load .env file
+        func loadEnvFile() {
+            var envPaths: [String] = []
+
+            // Look in directory where binary is located
+            if let execPath = ProcessInfo.processInfo.arguments.first {
+                let binaryDir = (execPath as NSString).deletingLastPathComponent
+                envPaths.append(binaryDir + "/.env")
+                envPaths.append((binaryDir as NSString).deletingLastPathComponent + "/.env")
+            }
+
+            // Look in standard locations
+            envPaths.append(FileManager.default.currentDirectoryPath + "/.env")
+            envPaths.append(FileManager.default.homeDirectoryForCurrentUser.path + "/.calendar-sync/.env")
+
+            for envPath in envPaths {
+                guard FileManager.default.fileExists(atPath: envPath) else { continue }
+
+                do {
+                    let content = try String(contentsOfFile: envPath, encoding: .utf8)
+                    for line in content.components(separatedBy: .newlines) {
+                        let trimmed = line.trimmingCharacters(in: .whitespaces)
+                        guard !trimmed.isEmpty && !trimmed.hasPrefix("#") else { continue }
+
+                        let parts = trimmed.components(separatedBy: "=")
+                        guard parts.count == 2 else { continue }
+
+                        let key = parts[0].trimmingCharacters(in: .whitespaces)
+                        let value = parts[1].trimmingCharacters(in: .whitespaces)
+                        setenv(key, value, 1)
+                    }
+                    return
+                } catch {
+                    continue
+                }
+            }
+        }
+
+        loadEnvFile()
+
         if showHelp {
             print("""
             Calendar Sync - Sync events from macOS Calendar to Google Calendar
@@ -39,15 +79,19 @@ struct CalendarSync {
 
         // MARK: - Constants
 
-        // Load credentials from environment variables or use defaults
-        let clientID = ProcessInfo.processInfo.environment["CALENDAR_SYNC_CLIENT_ID"] ??
-            "REDACTED-GOOGLE-CLIENT-ID"
+        guard let clientID = ProcessInfo.processInfo.environment["CALENDAR_SYNC_CLIENT_ID"] else {
+            print("ERROR: CALENDAR_SYNC_CLIENT_ID environment variable is required")
+            exit(1)
+        }
 
-        let clientSecret = ProcessInfo.processInfo.environment["CALENDAR_SYNC_CLIENT_SECRET"] ??
-            "REDACTED-GOOGLE-CLIENT-SECRET"
+        guard let clientSecret = ProcessInfo.processInfo.environment["CALENDAR_SYNC_CLIENT_SECRET"] else {
+            print("ERROR: CALENDAR_SYNC_CLIENT_SECRET environment variable is required")
+            exit(1)
+        }
 
         let scope =
-            "https://www.googleapis.com/auth/calendar"
+            "https://www.googleapis.com/auth/calendar.calendarlist.readonly " +
+            "https://www.googleapis.com/auth/calendar.app.created"
 
         // MARK: - Helpers
 
@@ -76,13 +120,17 @@ struct CalendarSync {
 
         // MARK: - Settings Management
 
-        let settingsKey = "com.jondaley.Calendar-Sync"
+        // Must be run from inside the .app bundle (./bin/calendar-sync.app/Contents/MacOS/calendar-sync),
+        // not as a bare copied executable, so Bundle.main resolves the real bundle identifier and
+        // .standard consistently maps to the com.jondaley.calendar-sync domain.
+        let settingsDomain = Bundle.main.bundleIdentifier ?? "com.jondaley.calendar-sync"
+        let appDefaults = UserDefaults.standard
+        let settingsKey = "settings"
         let sourceCalendarIDKey = "sourceCalendarID"
         let destCalendarIDKey = "destCalendarID"
-        let refreshTokenKey = "refreshToken"
 
         func loadSettings() -> [String: String]? {
-            guard let data = UserDefaults.standard.data(forKey: settingsKey),
+            guard let data = appDefaults.data(forKey: settingsKey),
                   let settings = try? JSONDecoder().decode([String: String].self, from: data) else {
                 return nil
             }
@@ -91,7 +139,7 @@ struct CalendarSync {
 
         func saveSettings(_ settings: [String: String]) throws {
             let data = try JSONEncoder().encode(settings)
-            UserDefaults.standard.set(data, forKey: settingsKey)
+            appDefaults.set(data, forKey: settingsKey)
         }
 
         // MARK: - EventKit Helpers
@@ -156,7 +204,7 @@ struct CalendarSync {
                 }
             }
 
-            return calendars
+            return calendars.sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
         }
 
         func getUserCalendarSelection(_ calendars: [(id: String, name: String)]) -> String? {
@@ -182,7 +230,19 @@ struct CalendarSync {
 
             var existingCalendars: [[String: Any]] = []
             do {
-                existingCalendars = try listGoogleCalendars(accessToken: accessToken)
+                let allCalendars = try listGoogleCalendars(accessToken: accessToken)
+                print("Checking which calendars this app can access...")
+                existingCalendars = allCalendars.filter { cal in
+                    guard let id = cal["id"] as? String else { return false }
+                    if case .exists = checkGoogleCalendarExists(accessToken: accessToken, calendarID: id) {
+                        return true
+                    }
+                    return false
+                }.sorted {
+                    let lhs = $0["summary"] as? String ?? ""
+                    let rhs = $1["summary"] as? String ?? ""
+                    return lhs.localizedStandardCompare(rhs) == .orderedAscending
+                }
             } catch {
                 print("Could not fetch existing calendars (API may not be enabled).")
             }
@@ -191,13 +251,12 @@ struct CalendarSync {
             print("What would you like to do?")
 
             if !existingCalendars.isEmpty {
-                print("Your existing calendars:")
+                print("Your existing calendars (created by this app):")
                 for (index, cal) in existingCalendars.enumerated() {
                     let name = cal["summary"] as? String ?? "Unknown"
                     print("  \(index + 1). \(name)")
                 }
                 print("  \(existingCalendars.count + 1). Create new 'Corporate Calendar' calendar")
-                print("  \(existingCalendars.count + 2). Enter an existing calendar ID manually")
                 print("")
                 print("Choose an option:")
 
@@ -211,46 +270,11 @@ struct CalendarSync {
                     } else if choice == existingCalendars.count + 1 {
                         print("Creating new 'Corporate Calendar' calendar...")
                         return try createGoogleCalendar(accessToken: accessToken, calendarID: calendarID)
-                    } else if choice == existingCalendars.count + 2 {
-                        print("")
-                        print("To find your calendar ID:")
-                        print("  1. Go to https://calendar.google.com")
-                        print("  2. Find your calendar in the left sidebar")
-                        print("  3. Click the three dots menu next to it")
-                        print("  4. Select 'Settings'")
-                        print("  5. Look for 'Calendar ID' (usually an email-like format)")
-                        print("")
-                        print("Enter the Google Calendar ID:")
-                        if let calendarID = readLine(), !calendarID.isEmpty {
-                            return calendarID
-                        }
                     }
                 }
             } else {
-                print("  1. Create new 'Corporate Calendar' calendar")
-                print("  2. Enter an existing calendar ID manually")
-                print("")
-                print("Choose an option:")
-
-                if let input = readLine(), let choice = Int(input) {
-                    if choice == 1 {
-                        print("Creating new 'Corporate Calendar' calendar...")
-                        return try createGoogleCalendar(accessToken: accessToken, calendarID: calendarID)
-                    } else if choice == 2 {
-                        print("")
-                        print("To find your calendar ID:")
-                        print("  1. Go to https://calendar.google.com")
-                        print("  2. Find your calendar in the left sidebar")
-                        print("  3. Click the three dots menu next to it")
-                        print("  4. Select 'Settings'")
-                        print("  5. Look for 'Calendar ID' (usually an email-like format)")
-                        print("")
-                        print("Enter the Google Calendar ID:")
-                        if let calendarID = readLine(), !calendarID.isEmpty {
-                            return calendarID
-                        }
-                    }
-                }
+                print("Creating new 'Corporate Calendar' calendar...")
+                return try createGoogleCalendar(accessToken: accessToken, calendarID: calendarID)
             }
 
             throw NSError(domain: "Setup", code: -1, userInfo: [NSLocalizedDescriptionKey: "No calendar selected"])
@@ -282,7 +306,6 @@ struct CalendarSync {
             let calendarSemaphore = DispatchSemaphore(value: 0)
 
             var calendarData: Data?
-            var calendarHTTPStatus: Int?
             var calendarRequestError: Error?
 
             URLSession.shared.dataTask(with: calendarRequest) {
@@ -290,10 +313,6 @@ struct CalendarSync {
 
                 calendarData = data
                 calendarRequestError = error
-
-                if let response = response as? HTTPURLResponse {
-                    calendarHTTPStatus = response.statusCode
-                }
 
                 calendarSemaphore.signal()
 
@@ -430,7 +449,7 @@ struct CalendarSync {
 
         func listGoogleCalendars(accessToken: String) throws -> [[String: Any]] {
             var request = URLRequest(
-                url: URL(string: "https://www.googleapis.com/calendar/v3/calendarList")!
+                url: URL(string: "https://www.googleapis.com/calendar/v3/users/me/calendarList")!
             )
 
             request.httpMethod = "GET"
@@ -480,6 +499,51 @@ struct CalendarSync {
             return items
         }
 
+        enum CalendarCheckResult {
+            case exists
+            case notFound
+            case error(String)
+        }
+
+        func checkGoogleCalendarExists(accessToken: String, calendarID: String) -> CalendarCheckResult {
+            var request = URLRequest(
+                url: URL(string: "https://www.googleapis.com/calendar/v3/calendars/\(calendarID)")!
+            )
+
+            request.httpMethod = "GET"
+            request.setValue(
+                "Bearer \(accessToken)",
+                forHTTPHeaderField: "Authorization"
+            )
+
+            let semaphore = DispatchSemaphore(value: 0)
+            var httpStatus: Int = 0
+            var resultError: Error?
+
+            URLSession.shared.dataTask(with: request) { _, response, error in
+                resultError = error
+                if let httpResponse = response as? HTTPURLResponse {
+                    httpStatus = httpResponse.statusCode
+                }
+                semaphore.signal()
+            }.resume()
+
+            semaphore.wait()
+
+            if let error = resultError {
+                return .error(error.localizedDescription)
+            }
+
+            switch httpStatus {
+            case 200:
+                return .exists
+            case 404:
+                return .notFound
+            default:
+                return .error("HTTP \(httpStatus)")
+            }
+        }
+
         func listGoogleCalendarEvents(accessToken: String, calendarID: String) throws -> [String: Any] {
             var request = URLRequest(
                 url: URL(string: "https://www.googleapis.com/calendar/v3/calendars/\(calendarID)/events?maxResults=2500")!
@@ -494,10 +558,14 @@ struct CalendarSync {
             let semaphore = DispatchSemaphore(value: 0)
             var responseData: Data?
             var resultError: Error?
+            var httpStatus: Int = 0
 
             URLSession.shared.dataTask(with: request) { data, response, error in
                 responseData = data
                 resultError = error
+                if let httpResponse = response as? HTTPURLResponse {
+                    httpStatus = httpResponse.statusCode
+                }
                 semaphore.signal()
             }.resume()
 
@@ -510,6 +578,13 @@ struct CalendarSync {
             guard let data = responseData,
                   let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
                 throw NSError(domain: "GoogleCalendar", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to parse events"])
+            }
+
+            if let error = json["error"] {
+                if let errorObj = error as? [String: Any], let msg = errorObj["message"] as? String {
+                    throw NSError(domain: "GoogleCalendar", code: httpStatus, userInfo: [NSLocalizedDescriptionKey: msg])
+                }
+                throw NSError(domain: "GoogleCalendar", code: httpStatus, userInfo: [NSLocalizedDescriptionKey: "Google API error"])
             }
 
             return json
@@ -693,7 +768,7 @@ struct CalendarSync {
 
         // MARK: - First Run Setup
 
-        var settings = loadSettings()
+        let settings = loadSettings()
         var sourceCalendarID: String
         var destCalendarID: String?
 
@@ -782,8 +857,8 @@ struct CalendarSync {
                 print("ERROR: Refresh token not found in keychain.")
                 print("")
                 print("To fix this, reset and re-run setup:")
-                print("  defaults delete com.jondaley.Calendar-Sync")
-                print("  security delete-generic-password -s com.jondaley.Calendar-Sync -a google-refresh-token")
+                print("  defaults delete \(settingsDomain)")
+                print("  security delete-generic-password -s com.jondaley.calendar-sync -a google-refresh-token")
                 print("")
                 print("Then run the app again to re-authenticate with Google.")
                 exit(1)
@@ -823,6 +898,20 @@ struct CalendarSync {
                         cachedAccessToken = accessToken
                         tokenExpiryTime = Date(timeIntervalSinceNow: 55 * 60)
                     }
+                    switch checkGoogleCalendarExists(accessToken: accessToken, calendarID: destCalendarID!) {
+                    case .exists:
+                        break
+                    case .notFound:
+                        print("Destination calendar '\(destCalendarID!)' no longer exists on Google (it may have been deleted).")
+                        print("Let's pick or create a new destination calendar.")
+                        let newDestID = try chooseOrCreateDestinationCalendar(accessToken: accessToken, calendarID: sourceCalendarID)
+                        destCalendarID = newDestID
+                        try saveSettings([sourceCalendarIDKey: sourceCalendarID, destCalendarIDKey: newDestID])
+                        print("Updated settings saved. Destination calendar: \(newDestID)")
+                    case .error(let message):
+                        print("Warning: could not verify destination calendar (\(message)). Will attempt sync anyway.")
+                    }
+
                     let localEvents = getEventsFromCalendar(calendarID: sourceCalendarID, eventStore: eventStore)
 
                     print("Found \(localEvents.count) local events")
@@ -1209,18 +1298,16 @@ struct CalendarSync {
         print("OAuth SUCCESS")
         print("========================================")
 
-        var oauthAccessToken: String?
-        var oauthRefreshToken: String?
-
         if let token = json["access_token"] as? String {
-            oauthAccessToken = token
             print("Access token received: \(token.count) characters")
         }
 
         if let token = json["refresh_token"] as? String {
-            oauthRefreshToken = token
+            print("Refresh token received: \(token.count) characters")
             try Keychain.save(token)
             print("Refresh token saved securely in macOS Keychain.")
+        } else {
+            print("DEBUG: No refresh_token in OAuth response. Response keys: \(json.keys.sorted())")
         }
 
         if let expiresIn = json["expires_in"] {
@@ -1248,7 +1335,7 @@ struct CalendarSync {
         // MARK: - Save Settings
 
         destCalendarID = createdCalendarID
-        var newSettings: [String: String] = [
+        let newSettings: [String: String] = [
             sourceCalendarIDKey: sourceCalendarID,
             destCalendarIDKey: createdCalendarID
         ]

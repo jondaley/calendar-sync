@@ -25,13 +25,15 @@ CALENDAR_SYNC_CLIENT_SECRET=your-client-secret
 ./build.sh
 ```
 
-The `build.sh` script compiles the project using Xcode and automatically creates a symlink `./calendar-sync` in the project root that points to the built binary.
+The `build.sh` script compiles the project using Xcode and copies the built `.app` bundle to `./bin/calendar-sync.app`.
 
 ## Running the Binary
 
 ```bash
-./bin/calendar-sync
+./bin/calendar-sync.app/Contents/MacOS/calendar-sync
 ```
+
+**Important:** always run the executable from inside `./bin/calendar-sync.app`, not a copy of just the binary. A bare copied executable loses its Info.plist/sealed-resources binding, which macOS's code-identity checks need — Keychain calls (including the Touch ID-gated refresh token storage) fail with cryptic `errSecMissingEntitlement`/code-signing errors if run that way.
 
 ## Clean Build
 
