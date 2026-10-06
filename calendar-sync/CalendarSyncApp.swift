@@ -390,10 +390,14 @@ struct CalendarSync {
             let semaphore = DispatchSemaphore(value: 0)
             var tokenData: Data?
             var tokenError: Error?
+            var httpStatus: Int = 0
 
-            URLSession.shared.dataTask(with: request) { data, _, error in
+            URLSession.shared.dataTask(with: request) { data, response, error in
                 tokenData = data
                 tokenError = error
+                if let httpResponse = response as? HTTPURLResponse {
+                    httpStatus = httpResponse.statusCode
+                }
                 semaphore.signal()
             }.resume()
 
@@ -403,13 +407,19 @@ struct CalendarSync {
                 throw error
             }
 
-            guard let tokenData,
-                  let json = try? JSONSerialization.jsonObject(with: tokenData) as? [String: Any],
-                  let accessToken = json["access_token"] as? String else {
-                throw NSError(domain: "OAuth", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to refresh token"])
+            let json = tokenData.flatMap { try? JSONSerialization.jsonObject(with: $0) as? [String: Any] }
+
+            if let accessToken = json?["access_token"] as? String {
+                return accessToken
             }
 
-            return accessToken
+            var errorMessage = "Failed to refresh token (HTTP \(httpStatus))"
+            if let json {
+                let code = json["error"] as? String ?? "unknown_error"
+                let description = json["error_description"] as? String ?? ""
+                errorMessage = "Failed to refresh token: \(code) - \(description)"
+            }
+            throw NSError(domain: "OAuth", code: httpStatus, userInfo: [NSLocalizedDescriptionKey: errorMessage])
         }
 
         func getSyncMarker(event: EKEvent) -> String {
@@ -425,6 +435,21 @@ struct CalendarSync {
             dateFormatter.timeStyle = .short
             let dateStr = dateFormatter.string(from: startDate)
             return "\(title) (\(dateStr))"
+        }
+
+        func googleEventStartDate(_ event: [String: Any]) -> Date? {
+            guard let startObj = event["start"] as? [String: Any] else { return nil }
+
+            if let dateTime = startObj["dateTime"] as? String {
+                return ISO8601DateFormatter().date(from: dateTime)
+            }
+            if let date = startObj["date"] as? String {
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "yyyy-MM-dd"
+                dateFormatter.timeZone = TimeZone(identifier: "UTC")
+                return dateFormatter.date(from: date)
+            }
+            return nil
         }
 
         func formatGoogleEventDisplay(event: [String: Any]) -> String {
@@ -913,6 +938,10 @@ struct CalendarSync {
                         print("Warning: could not verify destination calendar (\(message)). Will attempt sync anyway.")
                     }
 
+                    // Use a fresh EKEventStore each cycle: this process has no run loop pumping
+                    // EKEventStoreChanged notifications, so a long-lived store's internal cache
+                    // never invalidates and keeps reporting events the source calendar deleted.
+                    let eventStore = EKEventStore()
                     let localEvents = getEventsFromCalendar(calendarID: sourceCalendarID, eventStore: eventStore)
 
                     print("Found \(localEvents.count) local events")
@@ -960,7 +989,16 @@ struct CalendarSync {
                     let localEventMarkers = Set(localEvents.map { getSyncMarker(event: $0) })
                     var deletedCount = 0
 
+                    let now = Date()
                     for googleEvent in googleEvents {
+                        // Local events are only fetched from "now" forward (see getEventsFromCalendar),
+                        // so a synced event whose start has already passed will never appear in
+                        // localEventMarkers even though it's still on the source calendar. Only treat
+                        // events still in the sync window as deletion candidates; leave past events alone.
+                        if let startDate = googleEventStartDate(googleEvent), startDate < now {
+                            continue
+                        }
+
                         if let description = googleEvent["description"] as? String, description.contains("sync:") {
                             // This is an event we synced
                             var found = false
