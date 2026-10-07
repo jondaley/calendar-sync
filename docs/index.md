@@ -17,7 +17,7 @@ corporate/work calendar alongside your personal Google Calendar.
 
 ## Links
 
-- [Source code on GitHub](https://github.com/jondaley/calendar-sync)
+- [Source code and README on GitHub](https://github.com/jondaley/calendar-sync)
 - [Privacy Policy](PRIVACY.html)
 - [Terms of Service](TERMS.html)
 - [License (GPL-3.0)](https://github.com/jondaley/calendar-sync/blob/main/LICENSE)

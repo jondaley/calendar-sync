@@ -6,13 +6,13 @@ A macOS command-line tool that syncs events from your local Calendar app to Goog
 
 **Prerequisites:** macOS 10.15+, corporate calendar in Calendar app, Google account
 
-**1. Set up OAuth credentials** at [Google Cloud Console](https://console.cloud.google.com/) (see [DOCS.md](DOCS.md) for full steps):
+**1. Set up OAuth credentials** at [Google Cloud Console](https://console.cloud.google.com/) (see [DOCS.md](docs/DOCS.md) for full steps):
    - Create a project and enable Google Calendar API
    - Add the `calendar.calendarlist.readonly` and `calendar.app.created` scopes on the OAuth consent screen
    - Create OAuth 2.0 Desktop credentials
    - Copy Client ID and Client Secret
 
-**2. Build & run** (see [BUILD.md](BUILD.md)):
+**2. Build & run** (see [BUILD.md](docs/BUILD.md)):
 ```bash
 ./bin/calendar-sync.app/Contents/MacOS/calendar-sync
 ```
@@ -37,8 +37,10 @@ On first run, the app will ask you to select a local calendar and authenticate w
 
 ## More Info
 
-- [BUILD.md](BUILD.md) — Build instructions, finding the binary, troubleshooting builds
-- [DOCS.md](DOCS.md) — How it works, customization, authentication details, troubleshooting
+- [BUILD.md](docs/BUILD.md) — Build instructions, finding the binary, troubleshooting builds
+- [DOCS.md](docs/DOCS.md) — How it works, customization, authentication details, troubleshooting
+- [PRIVACY.md](docs/PRIVACY.md) — Privacy policy
+- [TERMS.md](docs/TERMS.md) — Terms of service
 
 ## License
 
