@@ -1,3 +1,7 @@
+---
+title: Privacy Policy
+---
+
 # Privacy Policy for Calendar Sync
 
 **Effective date:** 2026-10-06

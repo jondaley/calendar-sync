@@ -1,3 +1,7 @@
+---
+title: Terms of Service
+---
+
 # Terms of Service for Calendar Sync
 
 **Effective date:** 2026-10-06
