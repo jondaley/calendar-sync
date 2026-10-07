@@ -93,10 +93,12 @@ struct CalendarSync {
             "https://www.googleapis.com/auth/calendar.calendarlist.readonly " +
             "https://www.googleapis.com/auth/calendar.app.created"
 
-        // How far back local events are fetched (see getEventsFromCalendar). Also used to bound
-        // the deletion check below: a Google event older than this was never in scope for the
-        // local query, so its absence doesn't mean it was deleted on the source calendar.
+        // How far back/ahead local events are fetched (see getEventsFromCalendar).
+        // syncWindowLookback is also used to bound the deletion check below: a Google event
+        // older than this was never in scope for the local query, so its absence doesn't mean
+        // it was deleted on the source calendar.
         let syncWindowLookback: TimeInterval = -90 * 24 * 60 * 60
+        let syncWindowLookahead: TimeInterval = 180 * 24 * 60 * 60
 
         // MARK: - Helpers
 
@@ -363,7 +365,7 @@ struct CalendarSync {
             }
 
             let startDate = Date(timeIntervalSinceNow: syncWindowLookback)
-            let endDate = Date(timeIntervalSinceNow: 180 * 24 * 60 * 60)
+            let endDate = Date(timeIntervalSinceNow: syncWindowLookahead)
 
             let predicate = eventStore.predicateForEvents(withStart: startDate, end: endDate, calendars: [calendar])
             return eventStore.events(matching: predicate)
@@ -907,6 +909,8 @@ struct CalendarSync {
             }
 
             let syncInterval: TimeInterval = 5 * 60
+            // Google access tokens last 60 minutes; cache for a bit less so we refresh before expiry.
+            let accessTokenCacheDuration: TimeInterval = 55 * 60
             let dateFormatter = DateFormatter()
             dateFormatter.dateStyle = .short
             dateFormatter.timeStyle = .short
@@ -921,13 +925,13 @@ struct CalendarSync {
 
                     var accessToken: String
 
-                    // Use cached token if still valid (cache for 55 minutes, refresh token expires in 60)
+                    // Use cached token if still valid
                     if let cached = cachedAccessToken, let expiry = tokenExpiryTime, Date() < expiry {
                         accessToken = cached
                     } else {
                         accessToken = try getAccessToken(clientID: clientID, clientSecret: clientSecret, refreshToken: refreshToken)
                         cachedAccessToken = accessToken
-                        tokenExpiryTime = Date(timeIntervalSinceNow: 55 * 60)
+                        tokenExpiryTime = Date(timeIntervalSinceNow: accessTokenCacheDuration)
                     }
                     switch checkGoogleCalendarExists(accessToken: accessToken, calendarID: destCalendarID!) {
                     case .exists:
