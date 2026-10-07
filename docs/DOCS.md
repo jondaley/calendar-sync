@@ -35,6 +35,29 @@ Your corporate calendar events should now appear in macOS Calendar.
    - Choose "Desktop application"
    - Click "Create"
 6. Copy your Client ID and Client Secret
+7. Move the app to production (see below) — otherwise Google expires your login after 7 days
+
+### Moving the App to Production
+
+While the OAuth consent screen's publishing status is **Testing**, Google expires refresh tokens after 7 days, so the app will keep asking you to re-authenticate. To avoid this:
+
+1. Complete the branding: go to "APIs & Services" > "OAuth consent screen" > "Branding" and fill in:
+   - **App homepage:** `https://github.limedaley.com/calendar-sync/`
+   - **Privacy policy link:** `https://github.limedaley.com/calendar-sync/PRIVACY.html`
+   - **Terms of service link:** `https://github.limedaley.com/calendar-sync/TERMS.html`
+   - **Authorized domains:** `limedaley.com` (Google requires the homepage/policy links to be on an authorized domain)
+   - **Do not upload an app logo.** Any branding logo has to be reviewed and approved by Google (which triggers the verification process); leaving it blank avoids that.
+
+   You can use the GitHub Pages site above as-is, or publish the `docs/` folder on your own custom domain (this one is a CNAME to `jondaley.github.io`) (e.g. via a fork with GitHub Pages and a custom domain) and use that domain and its URLs instead.
+2. Go to "Audience". Under "Publishing status", click "Publish app" and confirm. The status changes to **In production**
+3. Delete the old refresh token and sign in again, since tokens issued while in Testing still expire after 7 days:
+   ```bash
+   defaults delete com.jondaley.calendar-sync
+   security delete-generic-password -s com.jondaley.calendar-sync -a google-refresh-token
+   ```
+   Then run the app again; it walks you through setup and Google sign-in.
+
+You do **not** need to submit the app for Google verification for personal use. Unverified apps in production work, but Google shows a "Google hasn't verified this app" warning at sign-in (click "Advanced" > "Go to <app name> (unsafe)") and caps the app at 100 users — fine for a single-user tool, since you own the project.
 
 ## How It Works
 
@@ -100,6 +123,10 @@ Same issue as above - run the reset commands above.
 ### Destination calendar was deleted on Google
 
 If the Google Calendar you were syncing to gets deleted (e.g. cleaning up test calendars), the app detects this automatically at the start of each sync pass, walks you through picking or creating a new destination calendar, and updates its saved settings — no manual reset needed.
+
+### Asked to re-authenticate every week
+
+Your OAuth consent screen is still in **Testing**, which expires tokens after 7 days. Publish it as described in [Moving the App to Production](#moving-the-app-to-production), then reset and sign in again.
 
 ### Calendar wasn't created / synced
 
