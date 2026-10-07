@@ -97,8 +97,27 @@ struct CalendarSync {
         // syncWindowLookback is also used to bound the deletion check below: a Google event
         // older than this was never in scope for the local query, so its absence doesn't mean
         // it was deleted on the source calendar.
-        let syncWindowLookback: TimeInterval = -90 * 24 * 60 * 60
-        let syncWindowLookahead: TimeInterval = 180 * 24 * 60 * 60
+        // Defaults below can be overridden in .env (see .env.example).
+        func envNumber(_ name: String, default value: Double) -> Double {
+            guard let raw = ProcessInfo.processInfo.environment[name] else { return value }
+            guard let parsed = Double(raw), parsed > 0 else {
+                print("WARNING: ignoring invalid \(name)=\(raw); using default \(value)")
+                return value
+            }
+            return parsed
+        }
+
+        let syncWindowLookback: TimeInterval = -envNumber("CALENDAR_SYNC_DAYS_BACK", default: 90) * 24 * 60 * 60
+        let syncWindowLookahead: TimeInterval = envNumber("CALENDAR_SYNC_DAYS_AHEAD", default: 180) * 24 * 60 * 60
+        let syncInterval: TimeInterval = envNumber("CALENDAR_SYNC_INTERVAL_MINUTES", default: 5) * 60
+
+        // Google access tokens last 60 minutes; cache for a bit less so we refresh before expiry.
+        let accessTokenCacheDuration: TimeInterval = 55 * 60
+
+        // UserDefaults keys for saved settings.
+        let settingsKey = "settings"
+        let sourceCalendarIDKey = "sourceCalendarID"
+        let destCalendarIDKey = "destCalendarID"
 
         // MARK: - Helpers
 
@@ -132,9 +151,6 @@ struct CalendarSync {
         // .standard consistently maps to the com.jondaley.calendar-sync domain.
         let settingsDomain = Bundle.main.bundleIdentifier ?? "com.jondaley.calendar-sync"
         let appDefaults = UserDefaults.standard
-        let settingsKey = "settings"
-        let sourceCalendarIDKey = "sourceCalendarID"
-        let destCalendarIDKey = "destCalendarID"
 
         func loadSettings() -> [String: String]? {
             guard let data = appDefaults.data(forKey: settingsKey),
@@ -908,9 +924,6 @@ struct CalendarSync {
                 }
             }
 
-            let syncInterval: TimeInterval = 5 * 60
-            // Google access tokens last 60 minutes; cache for a bit less so we refresh before expiry.
-            let accessTokenCacheDuration: TimeInterval = 55 * 60
             let dateFormatter = DateFormatter()
             dateFormatter.dateStyle = .short
             dateFormatter.timeStyle = .short

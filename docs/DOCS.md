@@ -87,14 +87,16 @@ Events you create directly in Google Calendar are **never touched** by this app:
 
 ## Customization
 
-### Change sync interval
+### Change sync interval and window
 
-Edit `CalendarSyncApp.swift` and change:
-```swift
-let syncInterval: TimeInterval = 5 * 60  // 5 minutes
+Set any of these in your `.env` file (see `.env.example`); defaults apply if omitted:
+```
+CALENDAR_SYNC_INTERVAL_MINUTES=5
+CALENDAR_SYNC_DAYS_BACK=90
+CALENDAR_SYNC_DAYS_AHEAD=180
 ```
 
-to desired interval in seconds (e.g., `60 * 60` for 1 hour).
+The defaults live in the `// MARK: - Constants` block in `CalendarSyncApp.swift`, along with the other constants.
 
 ### Change calendar name
 
