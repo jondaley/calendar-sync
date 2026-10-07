@@ -104,7 +104,7 @@ If the Google Calendar you were syncing to gets deleted (e.g. cleaning up test c
 ### Calendar wasn't created / synced
 
 Check that:
-- The local calendar events are within the next 90 days
+- The local calendar event is within the sync window (90 days back to 180 days ahead)
 - Google Calendar API is enabled in your Google Cloud project
 - Your OAuth credentials are correct
 

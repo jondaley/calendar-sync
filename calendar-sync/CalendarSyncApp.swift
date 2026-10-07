@@ -93,6 +93,11 @@ struct CalendarSync {
             "https://www.googleapis.com/auth/calendar.calendarlist.readonly " +
             "https://www.googleapis.com/auth/calendar.app.created"
 
+        // How far back local events are fetched (see getEventsFromCalendar). Also used to bound
+        // the deletion check below: a Google event older than this was never in scope for the
+        // local query, so its absence doesn't mean it was deleted on the source calendar.
+        let syncWindowLookback: TimeInterval = -90 * 24 * 60 * 60
+
         // MARK: - Helpers
 
         func base64URL(_ data: Data) -> String {
@@ -357,8 +362,8 @@ struct CalendarSync {
                 return []
             }
 
-            let startDate = Date()
-            let endDate = Date(timeIntervalSinceNow: 90 * 24 * 60 * 60)
+            let startDate = Date(timeIntervalSinceNow: syncWindowLookback)
+            let endDate = Date(timeIntervalSinceNow: 180 * 24 * 60 * 60)
 
             let predicate = eventStore.predicateForEvents(withStart: startDate, end: endDate, calendars: [calendar])
             return eventStore.events(matching: predicate)
@@ -989,13 +994,9 @@ struct CalendarSync {
                     let localEventMarkers = Set(localEvents.map { getSyncMarker(event: $0) })
                     var deletedCount = 0
 
-                    let now = Date()
+                    let syncWindowStart = Date(timeIntervalSinceNow: syncWindowLookback)
                     for googleEvent in googleEvents {
-                        // Local events are only fetched from "now" forward (see getEventsFromCalendar),
-                        // so a synced event whose start has already passed will never appear in
-                        // localEventMarkers even though it's still on the source calendar. Only treat
-                        // events still in the sync window as deletion candidates; leave past events alone.
-                        if let startDate = googleEventStartDate(googleEvent), startDate < now {
+                        if let startDate = googleEventStartDate(googleEvent), startDate < syncWindowStart {
                             continue
                         }
 
